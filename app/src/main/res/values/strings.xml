@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">WBS-Timer</string>
+    <string name="toggle_text">Start</string>
+</resources>
