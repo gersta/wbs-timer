@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     var currentButtonText = "NONE"
 
+    var isChronometerRunning = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,18 +55,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         chronoPerType.putIfAbsent(clickedButton.text.toString(), ChronoConstants.INITIAL_VALUE)
 
         if ( isDifferentWbsClicked(clickedButton) ) {
-            chronometer.stop()
-            chronoPerType.put(currentButtonText, SystemClock.elapsedRealtime() - chronometer.base)
-            Log.d("Stopped chronometer", "Elapsed time of %s: %d".format(currentButtonText, stoppedTimer))
+            stopChronometerForCurrentWbs(chronometer)
 
-            currentButtonText = clickedButton.text as String
+            startChronometerForClickedWbs(chronometer, clickedButton)
+        } else {
+            if ( isChronometerRunning ) {
+                stopChronometerForCurrentWbs(chronometer)
+            } else {
+                startChronometerForClickedWbs(chronometer, clickedButton)
+            }
         }
+    }
 
+    fun stopChronometerForCurrentWbs(chronometer: Chronometer) {
+        chronometer.stop()
+        isChronometerRunning = false
+
+        chronoPerType.put(currentButtonText, SystemClock.elapsedRealtime() - chronometer.base)
+        Log.d("Stopped chronometer", "Elapsed time of %s: %d".format(currentButtonText, stoppedTimer))
+    }
+
+    fun startChronometerForClickedWbs(chronometer: Chronometer, clickedButton: Button) {
+        currentButtonText = clickedButton.text as String
 
         val start = SystemClock.elapsedRealtime() - chronoPerType.getOrElse(currentButtonText, { ChronoConstants.INITIAL_VALUE })
         Log.d("Starting chronometer", "Starting time for %s: %d".format(currentButtonText, start))
         chronometer.base = start
+
         chronometer.start()
+        isChronometerRunning = true
     }
 
 
