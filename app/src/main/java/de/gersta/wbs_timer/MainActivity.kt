@@ -1,8 +1,6 @@
 package de.gersta.wbs_timer
 
 import android.annotation.SuppressLint
-import android.icu.util.TimeZone
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
@@ -13,10 +11,6 @@ import android.widget.Button
 import android.widget.Chronometer
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import java.sql.Time
-import java.time.Instant
-import java.time.ZoneId
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     object ChronoConstants {
@@ -24,13 +18,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     var chronoPerType: HashMap<String, Long> = HashMap()
-    var currentButtonText = "NONE"
+    var currentButtonText = ""
     var isChronometerRunning = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initialisePersistedState()
 
         val stopButton = findViewById<Button>(R.id.stop_button)
         stopButton.setOnClickListener {
@@ -51,6 +47,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             wbsElements.addView(newWbsElement)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val wbsRepository = WbsRepository(this)
+        wbsRepository.persistWbsElements(chronoPerType.entries)
     }
 
     @SuppressLint("NewApi")
@@ -78,17 +81,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun stopChronometerForCurrentWbs(chronometer: Chronometer) {
-        chronometer.stop()
-        isChronometerRunning = false
+    private fun initialisePersistedState() {
+        val wbsRepository = WbsRepository(this)
+        val existingWbsElements = wbsRepository.extractWbsElements()
+        chronoPerType = existingWbsElements
+        existingWbsElements.entries.forEach { entry ->
+            val wbsElementLayout = findViewById<LinearLayout>(R.id.wbs_elements)
+            val newWbsElement = Button(ContextThemeWrapper(this, R.style.wbsElement))
 
-        val elapsedTime = SystemClock.elapsedRealtime() - chronometer.base
+            newWbsElement.id = View.generateViewId()
+            newWbsElement.text = entry.key
+            newWbsElement.setOnClickListener(this)
 
-        chronoPerType.put(currentButtonText, elapsedTime)
-        Log.d("Stopped chronometer", "Elapsed time of %s: %d seconds".format(currentButtonText, millisToSeconds(elapsedTime)))
+            wbsElementLayout.addView(newWbsElement)
+        }
     }
 
-    fun startChronometerForClickedWbs(chronometer: Chronometer, clickedButton: Button) {
+    private fun stopChronometerForCurrentWbs(chronometer: Chronometer) {
+        if ( !currentButtonText.isEmpty() ) {
+            chronometer.stop()
+            isChronometerRunning = false
+
+            val elapsedTime = SystemClock.elapsedRealtime() - chronometer.base
+
+            chronoPerType.put(currentButtonText, elapsedTime)
+            Log.d("Stopped chronometer", "Elapsed time of %s: %d seconds".format(currentButtonText, millisToSeconds(elapsedTime)))
+        }
+    }
+
+    private fun startChronometerForClickedWbs(chronometer: Chronometer, clickedButton: Button) {
         currentButtonText = clickedButton.text as String
 
 
@@ -102,11 +123,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
 
-    fun isDifferentWbsClicked(clickedButton: Button): Boolean {
+    private fun isDifferentWbsClicked(clickedButton: Button): Boolean {
         return currentButtonText != clickedButton.text
     }
 
-    fun millisToSeconds(timeInMillis: Long): Long {
+    private fun millisToSeconds(timeInMillis: Long): Long {
         return timeInMillis / 1000
     }
 }
