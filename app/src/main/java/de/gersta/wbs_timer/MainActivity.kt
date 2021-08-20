@@ -1,6 +1,8 @@
 package de.gersta.wbs_timer
 
 import android.annotation.SuppressLint
+import android.icu.util.TimeZone
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
@@ -9,6 +11,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.Chronometer
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import java.sql.Time
+import java.time.Instant
+import java.time.ZoneId
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     object ChronoConstants {
@@ -72,14 +78,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val elapsedTime = SystemClock.elapsedRealtime() - chronometer.base
 
         chronoPerType.put(currentButtonText, elapsedTime)
-        Log.d("Stopped chronometer", "Elapsed time of %s: %d".format(currentButtonText, elapsedTime))
+        Log.d("Stopped chronometer", "Elapsed time of %s: %d seconds".format(currentButtonText, millisToSeconds(elapsedTime)))
     }
 
     fun startChronometerForClickedWbs(chronometer: Chronometer, clickedButton: Button) {
         currentButtonText = clickedButton.text as String
 
-        val start = SystemClock.elapsedRealtime() - chronoPerType.getOrElse(currentButtonText, { ChronoConstants.INITIAL_VALUE })
-        Log.d("Starting chronometer", "Starting time for %s: %d".format(currentButtonText, start))
+
+        val currentWbsValue = chronoPerType.getOrElse(currentButtonText, { ChronoConstants.INITIAL_VALUE })
+        val start = SystemClock.elapsedRealtime() - currentWbsValue
+        Log.d("Starting chronometer", "Starting time for %s: %d seconds".format(currentButtonText, millisToSeconds(currentWbsValue)))
         chronometer.base = start
 
         chronometer.start()
@@ -89,5 +97,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     fun isDifferentWbsClicked(clickedButton: Button): Boolean {
         return currentButtonText != clickedButton.text
+    }
+
+    fun millisToSeconds(timeInMillis: Long): Long {
+        return timeInMillis / 1000
     }
 }
