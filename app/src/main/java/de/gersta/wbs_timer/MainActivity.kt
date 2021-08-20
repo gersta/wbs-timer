@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         const val INITIAL_VALUE: Long = 0
     }
 
-    var stoppedTimer: Long = 0
     var chronoPerType: HashMap<String, Long> = HashMap()
 
     var currentButtonText = "NONE"
@@ -36,9 +35,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val stopButton = findViewById<Button>(R.id.stop_button)
         stopButton.setOnClickListener {
             val chronometer: Chronometer = findViewById(R.id.timer)
-            chronometer.stop()
-            chronoPerType.put(currentButtonText, SystemClock.elapsedRealtime() - chronometer.base)
-            Log.d("Stopped chronometer", "Elapsed time of %s: %d".format(currentButtonText, stoppedTimer))
+
+            stopChronometerForCurrentWbs(chronometer)
         }
     }
 
@@ -71,8 +69,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         chronometer.stop()
         isChronometerRunning = false
 
-        chronoPerType.put(currentButtonText, SystemClock.elapsedRealtime() - chronometer.base)
-        Log.d("Stopped chronometer", "Elapsed time of %s: %d".format(currentButtonText, stoppedTimer))
+        val elapsedTime = SystemClock.elapsedRealtime() - chronometer.base
+
+        chronoPerType.put(currentButtonText, elapsedTime)
+        Log.d("Stopped chronometer", "Elapsed time of %s: %d".format(currentButtonText, elapsedTime))
     }
 
     fun startChronometerForClickedWbs(chronometer: Chronometer, clickedButton: Button) {
