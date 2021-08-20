@@ -24,21 +24,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     var chronoPerType: HashMap<String, Long> = HashMap()
-
     var currentButtonText = "NONE"
-
     var isChronometerRunning = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val sport = findViewById<Button>(R.id.sport)
-        val gaming = findViewById<Button>(R.id.gaming)
-
-        sport.setOnClickListener(this)
-        gaming.setOnClickListener(this)
 
         val stopButton = findViewById<Button>(R.id.stop_button)
         stopButton.setOnClickListener {
