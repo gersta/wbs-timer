@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.Button
 import android.widget.Chronometer
@@ -50,12 +51,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         addWbsButton.setOnClickListener {
             val newWbsName = findViewById<TextView>(R.id.new_wbs_name)
             val wbsElements = findViewById<LinearLayout>(R.id.wbs_elements)
-            val newWbsElement = Button(this)
-            wbsElements.addView(newWbsElement)
+            val newWbsElement = Button(ContextThemeWrapper(this, R.style.wbsElement))
 
             newWbsElement.id = View.generateViewId()
             newWbsElement.text = newWbsName.text.toString()
             newWbsElement.setOnClickListener(this)
+
+            wbsElements.addView(newWbsElement)
         }
     }
 

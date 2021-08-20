@@ -51,19 +51,13 @@
 
         <Button
             android:id="@+id/sport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="Sport"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stop_button" />
+            style="@style/wbsElement" />
 
         <Button
             android:id="@+id/gaming"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="Gaming"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stop_button" />
+            style="@style/wbsElement" />
     </LinearLayout>
 
     <Button
