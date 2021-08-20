@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Chronometer
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import java.sql.Time
@@ -43,6 +44,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val chronometer: Chronometer = findViewById(R.id.timer)
 
             stopChronometerForCurrentWbs(chronometer)
+        }
+
+        val addWbsButton = findViewById<Button>(R.id.add_new_wbs)
+        addWbsButton.setOnClickListener {
+            val newWbsName = findViewById<TextView>(R.id.new_wbs_name)
+            val wbsElements = findViewById<LinearLayout>(R.id.wbs_elements)
+            val newWbsElement = Button(this)
+            wbsElements.addView(newWbsElement)
+
+            newWbsElement.id = View.generateViewId()
+            newWbsElement.text = newWbsName.text.toString()
+            newWbsElement.setOnClickListener(this)
         }
     }
 
